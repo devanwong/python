@@ -1,0 +1,32 @@
+<html>
+<head>
+	<link rel="stylesheet" href="/static/css/styles.css" type="text/css">
+	<title></title>
+</head>
+<body>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<p>{{message}}</p>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+	<div id='container'>
+		<div class='header'>
+			<p>Welcome {{session['name']}}! </p>
+		</div>
+		<div class='header'>
+			<form action='/logout' method='post'>
+			<input type='submit' value='logout'>
+			</form>
+		</div>
+		<div class='header'>	
+			<form action='/users/destroy/{{session['id']}}' method='post'>
+			<input type='submit' value='delete/update'>
+			</form>
+		</div>
+
+
+	</div>
+</body>
+</html>
