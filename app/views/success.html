@@ -20,12 +20,47 @@
 			<input type='submit' value='logout'>
 			</form>
 		</div>
-		<div class='header'>	
+<!-- 		<div class='header'>	
 			<form action='/users/destroy/{{session['id']}}' method='post'>
 			<input type='submit' value='delete/update'>
 			</form>
-		</div>
+		</div> -->
+		<p>Here is a list of all your friends:</p>
 
+		<table>
+
+		  <tr>
+			<th>Alias</th>
+			<td>Action</td>
+			</tr>
+			
+			{% for user in users %}
+			<tr>
+				<td> insure friends name here: </th>
+				<td> <a href="/users/{{user_id}}"> View Profile </a> 
+					<a href="/"> Remove as Friend </td>
+			</tr>
+			{% endfor %}
+
+		</table>
+
+
+
+		<p>Other users not on your friend's list</p>
+			<table>
+			  <tr>
+				<th>Alias</th>
+				<td>Action</td>
+			  </tr>
+
+			  <tr>
+				<th>insert no friends name here:</th>
+				<td> <input type='Submit' value='Add Friend'></td>
+
+
+			</table>
+
+			<p>Retaking this test. I failed horribly. I couldn't even get my users to display</p>
 
 	</div>
 </body>

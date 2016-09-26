@@ -9,20 +9,19 @@ class Users(Controller):
 	def index(self):
 		if session.get('id'):
 			return self.load_view('success.html')
+		else:
+			users = self.models['User'].all_users()
+			return self.load_view('index.html', users=users)
 
-		return self.load_view('index.html')
+	def show(self, id):
+		user = self.models['User'].get_user_by_id(id)
+		return self.load_view('show.html', user=user)
 
-	# def show(self, id):
-	# 	# Note how we access the model using self.models
-	# 	email = self.models['User'].get_all_user(email)
-	# 	if email in :
-	# 		flash(This emai already exists)
-	# 	return self.load_view('/')
 
 	def register(self): 
 		status = self.models['User'].register_user(request.form)
 		if status['status']:
-			session['name'] = request.form['first_name']
+			session['name'] = request.form['name']
 			session['id'] = status['user_id']
 			flash('You have successfully registered!')
 			return self.load_view('success.html')
@@ -36,12 +35,11 @@ class Users(Controller):
 		flash('You are now logged out')
 		return redirect('/')
 
-	def login(self):
-		status = self.models['User'].login_process(request.form)
+	def friends(self):
+		status = self.models['User'].friends_process(request.form)
 		if status:	
-			flash('You have successfully logged in')
 			session['id'] = status['id']
-			session['name'] = status['first_name']
+			session['name'] = status['name']
 			return self.load_view('success.html', name=session['name'])
 		else:
 			flash('Invalid Password')		
