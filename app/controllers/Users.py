@@ -13,9 +13,9 @@ class Users(Controller):
 			users = self.models['User'].all_users()
 			return self.load_view('index.html', users=users)
 
-	def show(self, id):
-		user = self.models['User'].get_user_by_id(id)
-		return self.load_view('show.html', user=user)
+	# def show(self, id):
+	# 	user = self.models['User'].get_user_by_id(id)
+	# 	return self.load_view('show.html', user=user)
 
 
 	def register(self): 
@@ -24,7 +24,7 @@ class Users(Controller):
 			session['name'] = request.form['name']
 			session['id'] = status['user_id']
 			flash('You have successfully registered!')
-			return self.load_view('success.html')
+			return redirect('/friends')
 		else:
 			for message in status['errors']:
 				flash(message, 'regis_errors')
@@ -35,24 +35,39 @@ class Users(Controller):
 		flash('You are now logged out')
 		return redirect('/')
 
-	def friends(self):
-		status = self.models['User'].friends_process(request.form)
+#login
+	def login(self):
+		status = self.models['User'].login_process(request.form)
 		if status:	
 			session['id'] = status['id']
 			session['name'] = status['name']
-			return self.load_view('success.html', name=session['name'])
+			return redirect('/friends')
 		else:
 			flash('Invalid Password')		
 			return redirect('/')
 
+	def success(self):
+		friends = self.models['User'].friends_table(session['id'])
+		non_friends = self.models['User'].nofriends_table(session['id'])
+		return self.load_view('success.html', friends=friends, non_friends=non_friends)
+
 	# def update(self, user_id):
 	# 	return self.load_view('delete.html')
+	def add (self, user_id):
+		addfriend = self.models['User'].add_friends(session['id'],user_id)
+		return redirect ('/friends')
 
-	def destroy(self, id):
-		return self.load_view('delete.html', id=id)
+	def remove(self, user_id):
+		removefriend = self.models['User'].remove_friend(session['id'],user_id)
+		return redirect ('/friends')
 
-	def delete(self, id):
-		self.models['User'].delete_user(id)
-		session.clear()
-		flash('You have successfully deleted yourself!')
-		return redirect('/')
+	def view(self, user_id):
+		viewfriend = self.models['User'].view_friend(user_id)
+		return self.load_view('profile.html', viewfriend=viewfriend)
+
+
+	# def delete(self, id):
+	# 	self.models['User'].delete_user(id)
+	# 	session.clear()
+	# 	flash('You have successfully deleted yourself!')
+	# 	return redirect('/')

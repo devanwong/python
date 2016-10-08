@@ -9,10 +9,10 @@ class User(Model):
 	def all_users(self):
 		return self.db.query_db("SELECT * FROM users")
 
-	def get_user_by_id(self, user_id):
-		query = "SELECT * FROM users WHERE id = :user_id"
-		data = { 'id': user_id }
-		user_id = self.db.query_db(query, data)
+	# def get_user_by_id(self, user_id):
+	# 	query = "SELECT * FROM users WHERE id = :user_id"
+	# 	data = { 'id': user_id }
+	# 	user_id = self.db.query_db(query, data)
 
 	def register_user(self, info):
 
@@ -51,11 +51,11 @@ class User(Model):
 			print user_id
 			return {'status': True, 'user_id': user_id}
 
-
-	def friends_process (self, info):
+# login
+	def login_process (self, info):
 		password = info['password']
 		email = info['email']
-		query = "SELECT * FROM users WHERE email = :email LIMIT 1"
+		query = "SELECT users.id, users.name, users.email, users.password FROM users WHERE email = :email LIMIT 1"
 		data = {'email': info['email'] }
 		user = self.db.get_one(query, data)
 
@@ -64,18 +64,55 @@ class User(Model):
 				return user
 		return False
 
-	# def add_friends(self, user):
-	# 	# Build the query first and then the data that goes in the query
-	# 	query = "INSERT INTO user (alias) VALUES (:alias)"
-	# 	data = { 'alias': user['alias']
-	# 	}
-	# 	return self.db.query_db(query, data)
+	def friends_table (self,user_id):
+		query = """SELECT users.id, users.alias FROM friendships
+		LEFT JOIN users ON friendships.friendship_id = users.id WHERE friendships.user_id = :user_id """
+		data = {
+		'user_id': user_id
+		}
+		return self.db.query_db(query, data)
 
-	def delete_user(self, user_id):   
-		query = "DELETE FROM users WHERE id = :user_id LIMIT 1"
-		data = {'user_id' : user_id}
+	def nofriends_table (self,user_id):
+		query = """SELECT * FROM users WHERE users.id != :user_id
+					AND users.id NOT IN
+					(SELECT friendships.friendship_id 
+					FROM friendships LEFT JOIN users
+					ON friendships.user_id = users.id 
+					LEFT JOIN friendships AS friends 
+					ON users.id = friends.friendship_id
+					WHERE users.id = :user_id)
+				"""
+		data = {'user_id': user_id}
+		return self.db.query_db(query, data)
+
+	def add_friends(self, user_id, friendship_id):
+		# Build the query first and then the data that goes in the query
+		data = { 'friendship_id' : friendship_id,
+		'user_id': user_id
+		}
+		query = """INSERT INTO friendships (user_id, friendship_id) VALUES (:user_id, :friendship_id);"""
+		self.db.query_db(query, data)
+		query = """INSERT INTO friendships (user_id, friendship_id) VALUES (:friendship_id, :user_id);"""
 		self.db.query_db(query, data)
 
+
+	def remove_friend(self, user_id, friendship_id): 
+		data = { 'friendship_id' : friendship_id,
+		'user_id': user_id
+		} 
+		query = """DELETE FROM friendships WHERE friendship_id =:friendship_id AND user_id = :user_id LIMIT 1;"""
+		self.db.query_db(query, data) 
+		query = """DELETE FROM friendships WHERE friendship_id = :user_id and user_id = :friendship_id LIMIT 1;"""
+		self.db.query_db(query, data)
+		# query = "DELETE FROM users WHERE id = :user_id LIMIT 1"
+		# data = {'user_id' : user_id}
+
+	def view_friend (self,user_id):
+		query = """SELECT users.name, users.alias, users.email FROM users WHERE users.id = :user_id LIMIT 1;"""
+		data = { 
+		'user_id': user_id
+		}
+		return self.db.query_db(query, data)[0]
 
 """
 	def get_users(self):

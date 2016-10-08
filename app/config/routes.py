@@ -17,8 +17,12 @@ from system.core.router import routes
     The automatically generated routes respond to all of the http verbs (GET, POST, PUT, PATCH, DELETE)
 """
 routes['default_controller'] = 'Users'
-routes['POST']['/users/friends'] = 'Users#friends'
-# routes['POST']['/users/destroy/<int:id>'] = 'Users#destroy'
+routes['POST']['/login']= 'Users#login'
+routes['POST']['/register'] = 'Users#register'
+routes['GET']['/friends'] = 'Users#success'
+routes['POST']['/addfriend/<user_id>'] = 'Users#add'
+routes['POST']['/removefriend/<user_id>'] = 'Users#remove'
+routes['GET']['/user/<user_id>'] = 'Users#view'
 routes['POST']['/logout'] = 'Users#logout'
 # routes['GET']['/users/<int:id>']'Users#view'
 """

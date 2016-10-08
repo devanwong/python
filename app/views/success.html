@@ -20,28 +20,22 @@
 			<input type='submit' value='logout'>
 			</form>
 		</div>
-<!-- 		<div class='header'>	
-			<form action='/users/destroy/{{session['id']}}' method='post'>
-			<input type='submit' value='delete/update'>
-			</form>
-		</div> -->
+
 		<p>Here is a list of all your friends:</p>
 
 		<table>
 
-		  <tr>
+		<tr>
 			<th>Alias</th>
-			<td>Action</td>
+			<th>Action</th>
 			</tr>
-			
-			{% for user in users %}
+			{% for friend in friends %}
 			<tr>
-				<td> insure friends name here: </th>
-				<td> <a href="/users/{{user_id}}"> View Profile </a> 
-					<a href="/"> Remove as Friend </td>
+				<td> {{friend['alias']}} </td>
+				<td> <form action='/user/{{friend['id']}}' method='get'><input type='Submit' value='View Profile'></form> 
+					<form action='/removefriend/{{friend['id']}}' method='post'><input type='Submit' value='Remove Friend'></form></td>
 			</tr>
 			{% endfor %}
-
 		</table>
 
 
@@ -50,17 +44,18 @@
 			<table>
 			  <tr>
 				<th>Alias</th>
-				<td>Action</td>
+				<th>Action</t>
 			  </tr>
 
-			  <tr>
-				<th>insert no friends name here:</th>
-				<td> <input type='Submit' value='Add Friend'></td>
-
+			{% for non_friend in non_friends %}
+						<tr>
+							<td><a href="/user/{{non_friend['id']}}">{{non_friend['alias']}}</a></td>
+							<td><form action='/addfriend/{{non_friend['id']}}' method='post'> <input type='Submit' value='Add Friend'></form></td>
+						</tr>
+			{% endfor %}
 
 			</table>
 
-			<p>Retaking this test. I failed horribly. I couldn't even get my users to display</p>
 
 	</div>
 </body>
