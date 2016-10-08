@@ -1,11 +1,14 @@
 <html>
 <head>
 	<link rel="stylesheet" href="/static/css/styles.css" type="text/css">
-	<title> {{viewfriend.alias}}  </title>
+	<title>  </title>
 </head>
 <body>
- <h1> {{viewfriend['alias']}}'s Profile </h1>
- 	<p>Name: {{viewfriend.name}}</p>
- 	<p>Email: {{viewfriend.email}}</p>
+ <h1> {{viewfriends.item}} </h1>
+ <p>Users who add this product/item under their wish list.</p>
+
+ {% for viewfriend in viewfriends %}
+ 	<p>{{viewfriend.name}}</p>
+ {% endfor %}
 </body>
 </html>

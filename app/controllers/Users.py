@@ -10,8 +10,7 @@ class Users(Controller):
 		if session.get('id'):
 			return self.load_view('success.html')
 		else:
-			users = self.models['User'].all_users()
-			return self.load_view('index.html', users=users)
+			return self.load_view('index.html')
 
 	# def show(self, id):
 	# 	user = self.models['User'].get_user_by_id(id)
@@ -24,7 +23,7 @@ class Users(Controller):
 			session['name'] = request.form['name']
 			session['id'] = status['user_id']
 			flash('You have successfully registered!')
-			return redirect('/friends')
+			return redirect('/dashboard')
 		else:
 			for message in status['errors']:
 				flash(message, 'regis_errors')
@@ -41,7 +40,7 @@ class Users(Controller):
 		if status:	
 			session['id'] = status['id']
 			session['name'] = status['name']
-			return redirect('/friends')
+			return redirect('/dashboard')
 		else:
 			flash('Invalid Password')		
 			return redirect('/')
@@ -51,19 +50,24 @@ class Users(Controller):
 		non_friends = self.models['User'].nofriends_table(session['id'])
 		return self.load_view('success.html', friends=friends, non_friends=non_friends)
 
-	# def update(self, user_id):
-	# 	return self.load_view('delete.html')
+	# # def update(self, user_id):
+	# # 	return self.load_view('delete.html')
 	def add (self, user_id):
 		addfriend = self.models['User'].add_friends(session['id'],user_id)
-		return redirect ('/friends')
+		return redirect ('/dashboard')
 
 	def remove(self, user_id):
 		removefriend = self.models['User'].remove_friend(session['id'],user_id)
-		return redirect ('/friends')
+		return redirect ('/dashboard')
 
 	def view(self, user_id):
-		viewfriend = self.models['User'].view_friend(user_id)
-		return self.load_view('profile.html', viewfriend=viewfriend)
+		viewfriends = self.models['User'].view_friend(user_id)
+		print viewfriends
+		return self.load_view('profile.html', viewfriends=viewfriends)
+
+	def create (self):
+		return self.load_view('create.html')
+
 
 
 	# def delete(self, id):

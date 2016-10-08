@@ -21,19 +21,25 @@
 			</form>
 		</div>
 
-		<p>Here is a list of all your friends:</p>
+		<p>Here is your wish list:</p>
 
 		<table>
 
 		<tr>
-			<th>Alias</th>
+			<th>Item</th>
+			<th>Added By</th>
+			<th>Date Added</th>
 			<th>Action</th>
 			</tr>
 			{% for friend in friends %}
 			<tr>
-				<td> {{friend['alias']}} </td>
-				<td> <form action='/user/{{friend['id']}}' method='get'><input type='Submit' value='View Profile'></form> 
-					<form action='/removefriend/{{friend['id']}}' method='post'><input type='Submit' value='Remove Friend'></form></td>
+				<td> <a href="/wish_items/{{friend['id']}}"> {{friend['item']}}</a> </td>
+				<td> {{friend['name']}} </td>
+				<td> {{friend['created_at']}} </td>
+				<td> <form action='/removefriend/{{friend.user_id}}' method='post'><input type='Submit' value='Remove From Wishlist'></form>
+						<form action='/user/{{friend['id']}}' method='get'><input type='Submit' value='Delete'></form> 
+				</td>
+
 			</tr>
 			{% endfor %}
 		</table>
@@ -42,20 +48,26 @@
 
 		<p>Other users not on your friend's list</p>
 			<table>
-			  <tr>
-				<th>Alias</th>
-				<th>Action</t>
-			  </tr>
-
+		<tr>
+			<th>Item</th>
+			<th>Added By</th>
+			<th>Date Added</th>
+			<th>Action</th>
+			</tr>
 			{% for non_friend in non_friends %}
-						<tr>
-							<td><a href="/user/{{non_friend['id']}}">{{non_friend['alias']}}</a></td>
-							<td><form action='/addfriend/{{non_friend['id']}}' method='post'> <input type='Submit' value='Add Friend'></form></td>
-						</tr>
+			<tr>
+				<td><a href="/wish_items/{{non_friend['id']}}"> {{non_friend['item']}}</a> </td>
+				<td> {{non_friend['name']}} </td>
+				<td> {{non_friend['created_at']}} </td>
+				<td> <form action='/addfriend/{{non_friend.id}}' method='post'><input type='Submit' value='Add To My Wishlist'></form>
+				</td>
+
+			</tr>
 			{% endfor %}
 
 			</table>
-
+			<br><br>
+<a href="/wish_items/create">Add Item</a>
 
 	</div>
 </body>

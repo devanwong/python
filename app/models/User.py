@@ -6,8 +6,8 @@ class User(Model):
 	def __init__(self):
 		super(User, self).__init__()
 
-	def all_users(self):
-		return self.db.query_db("SELECT * FROM users")
+	# def all_users(self):
+	# 	return self.db.query_db("SELECT * FROM users")
 
 	# def get_user_by_id(self, user_id):
 	# 	query = "SELECT * FROM users WHERE id = :user_id"
@@ -65,54 +65,63 @@ class User(Model):
 		return False
 
 	def friends_table (self,user_id):
-		query = """SELECT users.id, users.alias FROM friendships
-		LEFT JOIN users ON friendships.friendship_id = users.id WHERE friendships.user_id = :user_id """
+		query = """SELECT lists.id, lists.item, lists.user_id, users.name, lists.add_id, users2.name, lists.created_at FROM lists
+		LEFT JOIN users ON lists.user_id = users.id
+		LEFT JOIN users AS users2 ON lists.add_id = users2.id
+		WHERE users.id = :user_id"""
 		data = {
 		'user_id': user_id
 		}
 		return self.db.query_db(query, data)
 
 	def nofriends_table (self,user_id):
-		query = """SELECT * FROM users WHERE users.id != :user_id
-					AND users.id NOT IN
-					(SELECT friendships.friendship_id 
-					FROM friendships LEFT JOIN users
-					ON friendships.user_id = users.id 
-					LEFT JOIN friendships AS friends 
-					ON users.id = friends.friendship_id
-					WHERE users.id = :user_id)
+		query = """SELECT lists.id, lists.item, lists.user_id, users.name, lists.add_id, users2.name, lists.created_at FROM lists
+		LEFT JOIN users ON lists.user_id = users.id
+		LEFT JOIN users AS users2 ON lists.add_id = users2.id
+		WHERE users.id != :user_id
 				"""
 		data = {'user_id': user_id}
 		return self.db.query_db(query, data)
 
-	def add_friends(self, user_id, friendship_id):
+	def add_friends(self, user_id, add_id):
 		# Build the query first and then the data that goes in the query
-		data = { 'friendship_id' : friendship_id,
+		data = { 'add_id' : add_id,
 		'user_id': user_id
+
 		}
-		query = """INSERT INTO friendships (user_id, friendship_id) VALUES (:user_id, :friendship_id);"""
+		query = """INSERT INTO lists (item, user_id, add_id) VALUES (:item, :user_id, :add_id);"""
 		self.db.query_db(query, data)
-		query = """INSERT INTO friendships (user_id, friendship_id) VALUES (:friendship_id, :user_id);"""
-		self.db.query_db(query, data)
+		# query = """INSERT INTO lists (user_id, add_id) VALUES (:add_id, :user_id);"""
+		# self.db.query_db(query, data)
 
 
-	def remove_friend(self, user_id, friendship_id): 
-		data = { 'friendship_id' : friendship_id,
+	def remove_friend(self, user_id, add_id): 
+		data = { 'add_id' : add_id,
 		'user_id': user_id
 		} 
-		query = """DELETE FROM friendships WHERE friendship_id =:friendship_id AND user_id = :user_id LIMIT 1;"""
+		query = """DELETE FROM items WHERE add_id =:add_id AND user_id = :user_id LIMIT 1;"""
 		self.db.query_db(query, data) 
-		query = """DELETE FROM friendships WHERE friendship_id = :user_id and user_id = :friendship_id LIMIT 1;"""
+		query = """DELETE FROM items WHERE add_id = :add_id and user_id = :add_id LIMIT 1;"""
 		self.db.query_db(query, data)
 		# query = "DELETE FROM users WHERE id = :user_id LIMIT 1"
 		# data = {'user_id' : user_id}
 
-	def view_friend (self,user_id):
-		query = """SELECT users.name, users.alias, users.email FROM users WHERE users.id = :user_id LIMIT 1;"""
+	def view_friend (self, user_id):
+		query = """SELECT lists.item, lists.user_id, users.name from lists 
+				LEFT JOIN  users on lists.user_id = users.id
+				WHERE lists.user_id = lists.user_id"""
 		data = { 
-		'user_id': user_id
+			'lists.user_id' : user_id
+			}
+		return self.db.query_db(query, data)
+
+	def create_list (self, item):
+		query = """INSERT into lists (item, created_at) VALUES (:item, NOW());"""
+		data = {
+		'item' : item
 		}
-		return self.db.query_db(query, data)[0]
+		return self.db.query_db(query, data)
+		
 
 """
 	def get_users(self):
